@@ -12,6 +12,8 @@ En esta etapa verificamos que:
 
 En este caso el modelo ya tenia todas las tablas del diagrama cumpliendo con la primera forma normal, por lo que no fue necesaria modificarla.
 
+---
+
 ## 2. Segunda Forma Normal (2FN)
 
 En la segunda etapa se verificó el cumplimiento que establece que además de cumplir con la 1FN, todos los atributos que no forman parte de una clave deben depender de **la totalidad de la clave primaria**, y no solamente de una parte de ella.
@@ -26,16 +28,142 @@ La tabla **detalle_venta** tiene clave primaria compuesta (id_producto y id_vent
 
 Por lo tanto con esto queda verificado que el modelo tambien cumple correctamente con la segunda forma normal, el resto de claves primarias son simples por lo tanto sus atributos no pueden tener una dependencia parcial.
 
-**3ra Forma Normal**: 
+---
 
-&nbsp;
+# 3. Tercera Forma Normal (3FN)
+
+La mayor parte de los cambios realizados en el diagrama corresponden a la Tercera Forma Normal.
+
+La 3FN busca eliminar las dependencias transitivas, es decir, situaciones en las que un atributo depende de otro atributo que no es la clave primaria, en lugar de depender directamente de la clave de su propia entidad.
+
+### 3.1. Normalización de los medios de pago
+
+En el modelo inicial, `Medios_De_Pago` concentraba información de diferentes tipos de medios de pago (efectivo, tarjeta, trasferencia):
+
+```text
+Medios_De_Pago
+----------------
+id_medio_pago
+nro_tarjeta
+tarjeta
+banco
+creado_en
+eliminado_en
+```
+
+Esto mezclaba en una misma entidad información correspondiente al medio de pago general con información específica de una tarjeta y de su banco.
+
+Para solucionar esto, se separaron las responsabilidades en diferentes entidades:
+
+```text
+medio_de_pago
+----------------
+id_medio_pago
+tipo
+creado_en
+eliminado_en
+id_persona
+```
+
+```text
+tarjeta
+----------------
+id_medio_pago
+tipo_tarjeta
+marca_tarjeta
+numero_tarjeta
+fecha_vencimiento
+creado_en
+id_banco
+```
+
+```text
+banco
+----------------
+id_banco
+nombre
+```
+
+De esta manera, los datos específicos de una tarjeta solamente se almacenan en `tarjeta`, mientras que los datos propios del banco se almacenan en `banco`.
+
+Esto nos evita dos cosas:
+- En casos donde el metodo de pago sea otro distinto a tarjeta evitar muchos atributos nulos.
+- Repetir información del banco para cada tarjeta y permite que un mismo banco pueda estar asociado a múltiples tarjetas.
+
+---
+
+### 3.2. Normalización de la unidad de medida
+
+En el modelo inicial, `producto` almacenaba directamente la unidad de medida como un atributo:
+
+```text
+producto
+----------------
+...
+unidad_medida
+kilogramo
+...
+```
+
+En el modelo normalizado se creó una entidad específica:
+
+```text
+unidad_medida
+----------------
+id_unidad_medida
+nombre
+abreviatura
+```
+
+Y `producto` pasó a almacenar solamente una referencia:
+
+```text
+producto
+----------------
+...
+id_unidad_medida (FK)
+...
+```
+
+De esta forma, la información de la unidad de medida se mantiene en un único lugar.
+
+Por ejemplo, en lugar de almacenar repetidamente diferentes valores de unidad de medida en los productos, cada producto referencia una unidad existente mediante `id_unidad_medida`.
+
+Esto permite mantener la consistencia de los nombres y abreviaturas de las unidades.
+
+---
+
+
+## 4. Resultado final
+
+Luego del proceso de normalización, el modelo quedó dividido en entidades con responsabilidades específicas:
+
+| Entidad | Responsabilidad |
+|---|---|
+| `persona` | Datos personales |
+| `usuario` | Datos de acceso y relación con persona/rol |
+| `rol` | Roles del sistema |
+| `venta` | Información general de la venta |
+| `detalle_venta` | Productos incluidos en una venta |
+| `producto` | Información de los productos |
+| `categoria` | Clasificación de productos |
+| `medio_de_pago` | Información general del medio de pago |
+| `tarjeta` | Información específica de tarjetas |
+| `banco` | Información de bancos |
+| `unidad_medida` | Catálogo de unidades de medida |
+
+De esta manera, el modelo final presenta **menor redundancia**, mayor **integridad referencial**, una mejor separación de responsabilidades y mayor facilidad para realizar modificaciones sin generar inconsistencias.
+
 
 **CAMBIOS REALIZADOS A LAS TABLAS**:
 
-&nbsp;
-
-* Cambio en el nombre, pasando de nombres en plural a singular y en snake_case.  
-* En **Detalle\_Venta**: Se eliminó la clave primaria simple **id\_detalle,** ahora la clave primaria pasa a ser la combinación entre **id\_producto y id\_venta,** esto refleja mejor el funcionamiento de la tabla  
-* Cambio en **Producto:** Se cambió el nombre del atributo kilogramo a peso, para que tenga sentido la existencia del atributo unidad\_medida y se puedan trabajar con unidades distintas al kilo (gramos, mililitros etc).
+* Cambio en el nombre, pasando de nombres en plural a singular.  
+* En **detalle_venta**: Se eliminó la clave primaria simple **id_detalle,** ahora la clave primaria pasa a ser la combinación entre **id_producto** y **id_venta**, esto refleja mejor el funcionamiento de la tabla.  
+* Se cambió el nombre del atributo **kilogramo** a **peso** en la tabla **producto**, para que tenga sentido la existencia de la entidad **unidad_medida** y se puedan trabajar con unidades distintas al kilo (gramos, mililitros etc).
+* Se separaron **tarjeta** y **banco** del **medio_pago** para cumplir con la 3FN ademas de dotarles de informacion especifica para cada tabla.
+* Se separo **unidad_medida** de **producto** para cumplir con la 3FN y evitando redundancia.
+* Se elimino **id_anulacion** de **venta** ya que no tenia sentido de existencia para nuestros requerimientos (utlizamos el **estado** para saber si esta anulado).
+* Se agregaron algunos atributos de auditoria (**creado_en**, **eliminado_en**, **actualizado_en**) en entidades ya existentes.
+* Se elimino el **id_usuario** de **usuario**, ya que su PK debe ser **id_persona** (que a su vez es su FK) representando su relacion de especializacion 1:1 con la superclase **persona**.
 
 
