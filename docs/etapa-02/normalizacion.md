@@ -12,19 +12,19 @@ En esta etapa verificamos que:
 
 En este caso el modelo ya tenia todas las tablas del diagrama cumpliendo con la primera forma normal, por lo que no fue necesaria modificarla.
 
-**2da Forma Normal**: Las tablas Persona, Rol, Categoría, Producto, Usuario, Venta y Medio\_De\_Pago cumplen con la segunda normal, ya que tienen clave primaria simple.
+## 2. Segunda Forma Normal (2FN)
 
-La tabla Detalle\_venta tiene clave primaria compuesta (id\_producto y id\_venta), se debe verificar que cada atributo depende totalmente de la clave compuesta.
+En la segunda etapa se verificó el cumplimiento que establece que además de cumplir con la 1FN, todos los atributos que no forman parte de una clave deben depender de **la totalidad de la clave primaria**, y no solamente de una parte de ella.
 
-&nbsp;
+La tabla **detalle_venta** tiene clave primaria compuesta (id_producto y id_venta), se debe verificar que cada atributo depende totalmente de la clave compuesta.
 
-**Subtotal** cumple con la 2FN ya que su valor depende si o si de las 2 claves compuestas. Se puede vender un producto con una misma id pero en cantidades distintas, y esto afectara el subtotal de la venta.
+- **subtotal** cumple con la 2FN ya que su valor depende si o si de las 2 claves compuestas. Se puede vender un producto con una misma id pero en cantidades distintas, y esto afectara el subtotal de la venta.
 
-**Cantidad** cumple con la 2FN. Se puede vender un mismo producto pero en cantidades distintas.
+- **cantidad** cumple con la 2FN. Se puede vender un mismo producto pero en cantidades distintas.
 
-**Precio\_Unitario** cumple con la 2FN ya que el valor de la venta del producto puede variar con el tiempo, y el precio que figura en la tabla original de producto puede quedar desactualizado
+- **precio_unitario** cumple con la 2FN ya que el valor de la venta del producto puede variar con el tiempo, y el precio que figura en la tabla original de producto puede quedar desactualizado
 
-&nbsp;
+Por lo tanto con esto queda verificado que el modelo tambien cumple correctamente con la segunda forma normal, el resto de claves primarias son simples por lo tanto sus atributos no pueden tener una dependencia parcial.
 
 **3ra Forma Normal**: 
 
