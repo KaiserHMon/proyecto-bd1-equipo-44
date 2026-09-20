@@ -38,32 +38,21 @@ La 3FN busca eliminar las dependencias transitivas, es decir, situaciones en las
 
 ### 3.1. Normalización de los medios de pago
 
-En el modelo inicial, `Medios_De_Pago` concentraba información de diferentes tipos de medios de pago (efectivo, tarjeta, trasferencia):
+En el modelo inicial, `tarjeta` tenia un atributo banco el cual se podia repetir entre múltiples tarjetas.
 
 ```text
-Medios_De_Pago
-----------------
-id_medio_pago
-nro_tarjeta
 tarjeta
-banco
-creado_en
-eliminado_en
-```
-
-Esto mezclaba en una misma entidad información correspondiente al medio de pago general con información específica de una tarjeta y de su banco.
-
-Para solucionar esto, se separaron las responsabilidades en diferentes entidades:
-
-```text
-medio_de_pago
 ----------------
 id_medio_pago
-tipo
+tipo_tarjeta
+marca_tarjeta
+numero_tarjeta
+fecha_vencimiento
 creado_en
-eliminado_en
-id_persona
+banco
 ```
+
+Para evitar esta redundancia, se creó la entidad `banco`:
 
 ```text
 tarjeta
@@ -84,10 +73,9 @@ id_banco
 nombre
 ```
 
-De esta manera, los datos específicos de una tarjeta solamente se almacenan en `tarjeta`, mientras que los datos propios del banco se almacenan en `banco`.
+De esta manera, los datos propios del banco se almacenan en `banco`.
 
-Esto nos evita dos cosas:
-- En casos donde el metodo de pago sea otro distinto a tarjeta evitar muchos atributos nulos.
+Esto nos evita:
 - Repetir información del banco para cada tarjeta y permite que un mismo banco pueda estar asociado a múltiples tarjetas.
 
 ---
@@ -160,10 +148,5 @@ De esta manera, el modelo final presenta **menor redundancia**, mayor **integrid
 * Cambio en el nombre, pasando de nombres en plural a singular.  
 * En **detalle_venta**: Se eliminó la clave primaria simple **id_detalle,** ahora la clave primaria pasa a ser la combinación entre **id_producto** y **id_venta**, esto refleja mejor el funcionamiento de la tabla.  
 * Se cambió el nombre del atributo **kilogramo** a **peso** en la tabla **producto**, para que tenga sentido la existencia de la entidad **unidad_medida** y se puedan trabajar con unidades distintas al kilo (gramos, mililitros etc).
-* Se separaron **tarjeta** y **banco** del **medio_pago** para cumplir con la 3FN ademas de dotarles de informacion especifica para cada tabla.
-* Se separo **unidad_medida** de **producto** para cumplir con la 3FN y evitando redundancia.
-* Se elimino **id_anulacion** de **venta** ya que no tenia sentido de existencia para nuestros requerimientos (utlizamos el **estado** para saber si esta anulado).
-* Se agregaron algunos atributos de auditoria (**creado_en**, **eliminado_en**, **actualizado_en**) en entidades ya existentes.
-* Se elimino el **id_usuario** de **usuario**, ya que su PK debe ser **id_persona** (que a su vez es su FK) representando su relacion de especializacion 1:1 con la superclase **persona**.
-
-
+* Se separo **banco** de **tarjeta** para cumplir con la 3FN ademas de
+* Se separo **unidad_medida** de **producto** para cumplir con la 3FN y evitar redundancia.
