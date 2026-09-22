@@ -1,29 +1,11 @@
-Evolución del Modelo de Datos: De la Idea Inicial al Modelo Relacional
+# Evolución del Modelo de Datos: Del Concepto a la Implementación
 
-Este documento detalla la evolución de la arquitectura de datos del sistema de gestión de supermercado, desde el planteo inicial de las reglas de negocio hasta llegar al Modelo Relacional Normalizado.
+## 1. Visión General
+Este documento detalla la trayectoria evolutiva del diseño de base de datos para el sistema de punto de venta, abarcando desde la descripción inicial de las reglas de negocio hasta la consolidación de un esquema relacional normalizado. El objetivo es proporcionar una trazabilidad clara de cómo los requerimientos funcionales se transformaron en estructuras de datos eficientes, resaltando las decisiones arquitectónicas clave y los procesos de refinamiento técnico que garantizan la integridad, escalabilidad y coherencia del sistema.
 
-0. Análisis del Planteo Inicial
+## 2. Decisiones Arquitectónicas Iniciales
+El diseño comenzó con la interpretación de las Reglas de Negocio (RN) fundamentales, las cuales sentaron las bases para la gestión de usuarios, la persistencia de datos y la auditoría histórica.
 
-El requerimiento original solicitaba informatizar un punto de venta gestionando Usuarios (Roles), Inventario (Productos y Categorías) y Ventas.
-
-Las Reglas de Negocio (RN) más críticas que moldearon el diseño inicial fueron:
-
-RN.04: Mantener el precio unitario histórico en cada venta.
-
-RN.06: Implementar bajas lógicas para preservar la integridad referencial.
-
-RN.10 & RN.11: Relación estricta entre Persona e Usuario (1:1) y Rol con Usuario (1:N).
-
-RN.15: Relación de muchos a muchos (N:M) entre Ventas y Productos.
-
-1. Primera Fase: El Modelo Entidad-Relación (DER Conceptual)
-
-Al volcar las reglas a un diagrama conceptual (DER), tomamos las siguientes decisiones arquitectónicas:
-
-Jerarquía y Herencia (Persona - Usuario): Se identificó que un Usuario es una Persona con credenciales de acceso. Se modeló utilizando una especialización disjunta, separando los datos personales (nombre, apellido, correo) de los datos de acceso (nombre_usuario, contraseña, código de autorización).
-
-Resolución de N:M (Detalle Venta): La relación entre Venta y Producto se conceptualizó con atributos propios (cantidad, precio_unitario, subtotal). El campo precio_unitario aquí garantiza el cumplimiento de la RN.04 (historial de precios intacto).
-
-Medios de Pago: Inicialmente, los datos bancarios (tarjeta, banco, nro_tarjeta) se modelaron como atributos de la entidad Medio_pago.
-
-Bajas Lógicas: Se agregó un atributo booleano eliminado en entidades clave (Persona, Categoria, Producto) para cumplir la RN.06.
+* **Roles y Permisos (RN.01, RN.02, RN.11):** Para garantizar un control de acceso robusto, se implementó una jerarquía lineal estricta. Cada individuo en el sistema se registra como una `Persona`, que a su vez posee una única cuenta de `Usuario` vinculada a un `Rol` específico. Esta estructura de 1 Persona -> 1 Usuario -> 1 Rol simplifica la administración de permisos y asegura que las responsabilidades dentro del sistema estén claramente delimitadas.
+* **Baja Lógica (RN.06):** En lugar de eliminar registros físicamente de la base de datos, se adoptó la estrategia de "Baja Lógica". Mediante el uso de atributos como `eliminado_en` o un flag de eliminado, el sistema preserva la integridad referencial y permite mantener un histórico completo de las operaciones, facilitando auditorías posteriores sin perder la capacidad de filtrar datos activos para la operación diaria.
+* **Inmutabilidad Histórica (RN.04):** Para proteger la validez de los reportes financieros, se decidió almacenar el `precio_unitario` directamente en la tabla `Detalle_Venta` al momento de la transacción. Esto evita que cambios futuros en el catálogo de precios alteren retroactivamente el valor de ventas ya realizadas, garantizando que el registro sea una fotografía fiel de la transacción en su contexto temporal.
