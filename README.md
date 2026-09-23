@@ -1,7 +1,15 @@
 # Proyecto - Base de Datos I - Equipo 44
 
 Este es el repositorio de nuestro proyecto para la asignatura de BDI.
-A continuacion podran encontrar como se estructura el proyecto y un indice para poder acceder a la documentacion.
+A continuacion podran encontrar quienes componen este grupo, como se estructura el proyecto y un indice para poder acceder a la documentacion.
+
+## Integrantes:
+
+- Harvey Benjamin
+- Rojas Marcos Agustin
+- Sanchez Cueba Tobias Agustin
+- Santoro Sandoval Lionel Adolfo
+- Hardoy Juan Segundo
 
 ## Índice
 
