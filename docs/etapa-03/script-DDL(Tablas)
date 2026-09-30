@@ -1,0 +1,65 @@
+-- 1. Tablas Independientes
+
+CREATE TABLE rol (
+    id_rol INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    eliminado_en DATETIME NULL
+);
+
+CREATE TABLE persona (
+    id_persona INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    eliminado_en DATETIME NULL
+);
+
+CREATE TABLE categoria (
+    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion TEXT NOT NULL,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    eliminado_en DATETIME NULL
+);
+
+CREATE TABLE unidad_medida (
+    id_unidad_medida INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    abreviatura VARCHAR(10) NOT NULL UNIQUE
+);
+
+-- 2. Tablas Dependientes de este bloque
+
+CREATE TABLE usuario (
+    id_persona INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    codigo_autorizacion VARCHAR(100) NULL,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    eliminado_en DATETIME NULL,
+    id_rol INT NOT NULL,
+    FOREIGN KEY (id_persona) REFERENCES persona(id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_rol) REFERENCES rol(id_rol) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE producto (
+    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    precio DECIMAL(10,2) NOT NULL,
+    stock INT NOT NULL,
+    peso DECIMAL(10,2) NULL,
+    codigo_barra VARCHAR(50) NOT NULL UNIQUE,
+    descripcion TEXT NOT NULL,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    eliminado_en DATETIME NULL,
+    id_categoria INT NOT NULL,
+    id_unidad_medida INT NOT NULL,
+    FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (id_unidad_medida) REFERENCES unidad_medida(id_unidad_medida) ON DELETE RESTRICT ON UPDATE CASCADE
+);
