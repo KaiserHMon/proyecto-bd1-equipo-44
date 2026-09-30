@@ -32,7 +32,19 @@ CREATE TABLE unidad_medida (
     abreviatura VARCHAR(10) NOT NULL UNIQUE
 );
 
--- 2. Tablas Dependientes de este bloque
+CREATE TABLE medio_de_pago (
+    id_medio_pago INT IDENTITY(1,1) PRIMARY KEY,
+    tipo VARCHAR(50) NOT NULL,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    eliminado_en DATETIME NULL
+);
+
+CREATE TABLE banco (
+    id_banco INT IDENTITY(1,1) PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- 2. Tablas Dependientes
 
 CREATE TABLE usuario (
     id_persona INT IDENTITY(1,1) PRIMARY KEY,
@@ -58,4 +70,34 @@ CREATE TABLE producto (
     eliminado_en DATETIME NULL,
     id_categoria INT NOT NULL,
     id_unidad_medida INT NOT NULL,
+);
+
+CREATE TABLE tarjeta (
+    id_medio_pago INT PRIMARY KEY,
+    tipo_tarjeta VARCHAR(50) NOT NULL,
+    marca_tarjeta VARCHAR(50) NOT NULL,
+    numero_tarjeta VARCHAR(20) NOT NULL,
+    fecha_vencimiento DATE NOT NULL,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    id_banco INT NOT NULL
+);
+
+CREATE TABLE venta (
+    id_venta INT IDENTITY(1,1) PRIMARY KEY,
+    monto_total DECIMAL(12,2) NOT NULL,
+    estado VARCHAR(30) NOT NULL DEFAULT 'En proceso',
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en DATETIME NULL,
+    id_medio_pago INT NOT NULL,
+    id_persona INT NOT NULL
+);
+
+CREATE TABLE detalle_venta (
+    id_venta INT NOT NULL,
+    id_producto INT NOT NULL,
+    cantidad INT NOT NULL,
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(12,2) NOT NULL,
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_venta, id_producto)
 );
