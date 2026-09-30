@@ -43,8 +43,6 @@ CREATE TABLE usuario (
     actualizado_en DATETIME ON UPDATE CURRENT_TIMESTAMP,
     eliminado_en DATETIME NULL,
     id_rol INT NOT NULL,
-    FOREIGN KEY (id_persona) REFERENCES persona(id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_rol) REFERENCES rol(id_rol) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE TABLE producto (
@@ -60,6 +58,4 @@ CREATE TABLE producto (
     eliminado_en DATETIME NULL,
     id_categoria INT NOT NULL,
     id_unidad_medida INT NOT NULL,
-    FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (id_unidad_medida) REFERENCES unidad_medida(id_unidad_medida) ON DELETE RESTRICT ON UPDATE CASCADE
 );
