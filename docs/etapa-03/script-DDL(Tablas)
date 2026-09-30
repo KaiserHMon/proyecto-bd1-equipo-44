@@ -11,7 +11,7 @@ CREATE TABLE persona (
     id_persona INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
     creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
     actualizado_en DATETIME ON UPDATE CURRENT_TIMESTAMP,
     eliminado_en DATETIME NULL
@@ -20,7 +20,7 @@ CREATE TABLE persona (
 CREATE TABLE categoria (
     id_categoria INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
-    descripcion TEXT,
+    descripcion TEXT NOT NULL,
     creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
     actualizado_en DATETIME ON UPDATE CURRENT_TIMESTAMP,
     eliminado_en DATETIME NULL
@@ -35,10 +35,10 @@ CREATE TABLE unidad_medida (
 -- 2. Tablas Dependientes de este bloque
 
 CREATE TABLE usuario (
-    id_persona INT PRIMARY KEY,
+    id_persona INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    codigo_autorizacion VARCHAR(100),
+    codigo_autorizacion VARCHAR(100) NULL,
     creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
     actualizado_en DATETIME ON UPDATE CURRENT_TIMESTAMP,
     eliminado_en DATETIME NULL,
@@ -50,11 +50,11 @@ CREATE TABLE usuario (
 CREATE TABLE producto (
     id_producto INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
-    precio DECIMAL(10,2) NOT NULL CHECK (precio >= 0),
-    stock INT NOT NULL DEFAULT 0 CHECK (stock >= 0),
-    peso DECIMAL(10,2) NULL CHECK (peso >= 0),
-    codigo_barra VARCHAR(50) UNIQUE,
-    descripcion TEXT,
+    precio DECIMAL(10,2) NOT NULL,
+    stock INT NOT NULL,
+    peso DECIMAL(10,2) NULL,
+    codigo_barra VARCHAR(50) NOT NULL UNIQUE,
+    descripcion TEXT NOT NULL,
     creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
     actualizado_en DATETIME ON UPDATE CURRENT_TIMESTAMP,
     eliminado_en DATETIME NULL,
