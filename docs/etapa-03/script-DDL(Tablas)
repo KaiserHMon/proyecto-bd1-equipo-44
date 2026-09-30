@@ -1,14 +1,14 @@
 -- 1. Tablas Independientes
 
 CREATE TABLE rol (
-    id_rol INT AUTO_INCREMENT PRIMARY KEY,
+    id_rol INT IDENTITY(1,1) PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL UNIQUE,
     creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
     eliminado_en DATETIME NULL
 );
 
 CREATE TABLE persona (
-    id_persona INT AUTO_INCREMENT PRIMARY KEY,
+    id_persona INT IDENTITY(1,1) PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
@@ -18,7 +18,7 @@ CREATE TABLE persona (
 );
 
 CREATE TABLE categoria (
-    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+    id_categoria INT IDENTITY(1,1) PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
     descripcion TEXT NOT NULL,
     creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -27,7 +27,7 @@ CREATE TABLE categoria (
 );
 
 CREATE TABLE unidad_medida (
-    id_unidad_medida INT AUTO_INCREMENT PRIMARY KEY,
+    id_unidad_medida INT IDENTITY(1,1) PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     abreviatura VARCHAR(10) NOT NULL UNIQUE
 );
@@ -35,7 +35,7 @@ CREATE TABLE unidad_medida (
 -- 2. Tablas Dependientes de este bloque
 
 CREATE TABLE usuario (
-    id_persona INT AUTO_INCREMENT PRIMARY KEY,
+    id_persona INT IDENTITY(1,1) PRIMARY KEY,
     nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     codigo_autorizacion VARCHAR(100) NULL,
@@ -48,7 +48,7 @@ CREATE TABLE usuario (
 );
 
 CREATE TABLE producto (
-    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    id_producto INT IDENTITY(1,1) PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
     precio DECIMAL(10,2) NOT NULL,
     stock INT NOT NULL,
