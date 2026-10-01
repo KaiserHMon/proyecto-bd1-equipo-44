@@ -103,7 +103,7 @@ CREATE TABLE tarjeta (
     fecha_vencimiento DATE NOT NULL,
     creado_en DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     id_banco INT NOT NULL,
-    CONSTRAINT CK_tarjeta_tipo CHECK (tipo_tarjeta IN ('Débito', 'Crédito', 'Prepaga')),
+    CONSTRAINT CK_tarjeta_tipo CHECK (tipo_tarjeta IN ('Debito', 'Credito', 'Prepaga')),
     CONSTRAINT FK_tarjeta_medio_pago FOREIGN KEY (id_medio_pago) REFERENCES medio_de_pago(id_medio_pago),
     CONSTRAINT FK_tarjeta_banco FOREIGN KEY (id_banco) REFERENCES banco(id_banco)
 );
