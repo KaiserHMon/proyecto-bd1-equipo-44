@@ -1,0 +1,29 @@
+SELECT
+    -- Encabezado
+    v.id_venta,
+    v.creado_en                         AS fecha,
+    p.nombre                            AS nombre_vendedor,
+    p.apellido                          AS apellido_vendedor,
+    mp.tipo                             AS medio_de_pago,
+
+    -- Detalle
+    pr.nombre                           AS producto,
+    dv.cantidad,
+    dv.precio_unitario,
+
+    -- Subtotal por renglón
+    dv.cantidad * dv.precio_unitario    AS subtotal,
+
+    -- Total acumulado de la venta
+    (SELECT SUM(dv2.cantidad * dv2.precio_unitario)
+     FROM detalle_venta dv2
+     WHERE dv2.id_venta = v.id_venta)   AS total_venta
+
+FROM venta v
+INNER JOIN detalle_venta dv  ON v.id_venta       = dv.id_venta
+INNER JOIN producto      pr  ON dv.id_producto   = pr.id_producto
+INNER JOIN usuario       u   ON v.id_persona     = u.id_persona
+INNER JOIN persona       p   ON u.id_persona     = p.id_persona
+INNER JOIN medio_de_pago mp  ON v.id_medio_pago  = mp.id_medio_pago
+WHERE v.id_venta = 1
+ORDER BY pr.nombre;
