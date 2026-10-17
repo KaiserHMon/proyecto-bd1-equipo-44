@@ -1,3 +1,4 @@
+  --  genera un comprobante por cada venta emitida con la información más relevante
 SELECT
     -- Encabezado
     v.id_venta,
