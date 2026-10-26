@@ -14,18 +14,65 @@ Todo esto con el fin de conservar los datos de la entidad que se modifica/elimin
 
 ## Como lo hacemos
 
-'Creacion y definicion del trigger'
-CREATE TRIGGER
-ON 'tabla que activa el trigger'
-'El momento en el que se activa BEFORE/AFTER' 'la accion que lo activa INSERT/UPDATE/DELETE'
+La estructura general de un trigger de auditoría en SQL Server es la siguiente:
+
+```sql
+CREATE TRIGGER <nombre_del_trigger>
+ON <tabla_que_activa_el_trigger>
+AFTER <INSERT | UPDATE | DELETE>
 AS
 BEGIN
-    INSERT INTO 'la tabla de auditoria que usamos para guardar los datos'
-    (
-        'los campos que vamos a completar'
+    INSERT INTO <tabla_de_auditoria> (
+        <campos_a_completar>
     )
     SELECT
-        'los datos de la tabla que ejecuta el trigger que queremos guarda y los personalizados que definimos nosotros como SYSDATETIME()'
-    FROM 'estas son tablas logicas que proporciona SQL Server puede ser: inserted (contiene las nuevas versiones de las filas afectadas) o deleted (contiene las versiones anteriores de las filas afectadas)'
+        <columnas_de_la_tabla_origen>,
+        <valores_calculados>,  -- por ejemplo SYSDATETIME() o USER_NAME()
+    FROM <tabla_logica>;
 END;
-'Fin del trigger'
+GO
+```
+
+Cada parte cumple una función específica:
+
+| Elemento | Descripción |
+| --- | --- |
+| `CREATE TRIGGER <nombre>` | Define el nombre del trigger. Conviene usar un prefijo que indique su propósito, por ejemplo `auditoria_venta_update`. |
+| `ON <tabla>` | Indica la tabla cuyo cambio dispara el trigger. |
+| `AFTER <acción>` | Define el momento y la acción que lo activan. `AFTER` ejecuta el trigger después de que la operación se aplicó; la acción puede ser `INSERT`, `UPDATE` o `DELETE`. |
+| `INSERT INTO <tabla_de_auditoria>` | Guarda el registro histórico en la tabla de auditoría. |
+| `SELECT ... FROM <tabla_logica>` | Obtiene los datos a auditar desde las tablas lógicas de SQL Server. |
+| `END;` | Cierra el cuerpo del trigger. |
+
+Sobre las tablas lógicas:
+
+- `inserted` contiene las versiones nuevas de las filas afectadas (útil en `INSERT` y `UPDATE`).
+- `deleted` contiene las versiones anteriores de las filas afectadas (útil en `UPDATE` y `DELETE`).
+
+Por eso, para auditar una actualización usamos `deleted` (el estado previo) y para auditar una eliminación también `deleted`, ya que la fila original deja de existir en la tabla.
+
+Ejemplo aplicado a nuestro caso, auditando la actualización de una venta:
+
+```sql
+CREATE TRIGGER dbo.auditoria_venta_update
+ON dbo.venta
+AFTER UPDATE
+AS
+BEGIN
+    INSERT INTO dbo.auditoria_venta (
+        id_venta,
+        monto_total,
+        estado,
+        fecha_auditoria,
+        usuario_bd
+    )
+    SELECT
+        d.id_venta,
+        d.monto_total,
+        d.estado,
+        SYSDATETIME(),
+        USER_NAME()
+    FROM deleted AS d;
+END;
+GO
+```
