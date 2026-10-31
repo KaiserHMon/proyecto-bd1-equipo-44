@@ -45,13 +45,7 @@ IF (SELECT COUNT(*) FROM dbo.numeros) < 1000000
 GO
 
 
-/* Carga en 10 lotes de 100.000 filas. Los valores salen del numero de fila:
-
-   - fecha_venta: se reparte en los 3 anos que van del 2023-10-01 al
-     2026-09-30 (94.608.000 segundos). Se multiplica por 337 y se toma el
-     resto, asi las fechas quedan desordenadas y no consecutivas.
-   - estado: 80% Completada, 10% En proceso y 10% Cancelada.
-   - id_medio_pago e id_persona: dentro del rango de los datos de prueba. */
+/* Carga en 10 lotes de 100.000 filas. Los valores salen del numero de fila:*/
 
 DECLARE @total INT = 1000000;
 DECLARE @tamano_lote INT = 100000;
@@ -105,32 +99,4 @@ BEGIN
 END;
 
 PRINT 'Carga terminada en ' + CAST(DATEDIFF(SECOND, @inicio, SYSDATETIME()) AS VARCHAR(20)) + ' segundos.';
-GO
-
-
--- Verificacion de filas, rango de fechas y objetos que hoy tiene la tabla
-
-SELECT COUNT(*) AS filas_totales FROM dbo.venta_historica;
-GO
-
-SELECT
-    MIN(fecha_venta) AS primera_fecha,
-    MAX(fecha_venta) AS ultima_fecha
-FROM dbo.venta_historica;
-GO
-
--- Filas del periodo que se consulta en todas las pruebas
-SELECT COUNT(*) AS filas_del_periodo
-FROM dbo.venta_historica
-WHERE fecha_venta >= '2026-03-02'
-  AND fecha_venta <  '2026-03-09';
-GO
-
--- Tiene que devolver solo el heap (sin indice agrupado ni no agrupado)
-SELECT name AS indice, type_desc AS tipo
-FROM sys.indexes
-WHERE object_id = OBJECT_ID('dbo.venta_historica');
-GO
-
-EXEC sp_spaceused 'dbo.venta_historica';
 GO
