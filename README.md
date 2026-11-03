@@ -29,6 +29,7 @@ A continuacion podran encontrar quienes componen este grupo, como se estructura 
   - [Etapa 5: Triggers, Auditoría e Índices](docs/etapa-05/)
     - [Triggers de auditoría](docs/etapa-05/triggers-auditoria.md)
     - [Índices y optimización de consultas](docs/etapa-05/indices-optimizacion.md)
+    - [Seguridad y roles](docs/etapa-05/seguridad.md)
 - [SQL](sql/)
   - [DDL: creación de la base de datos](sql/ddl/)
   - [DML: datos de prueba](sql/dml/)
