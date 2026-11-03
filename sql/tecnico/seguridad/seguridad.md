@@ -23,8 +23,8 @@ Creamos un rol por cada rol del sistema, con el prefijo `rol_` para no confundir
 | Rol | Permisos | Regla |
 | --- | --- | --- |
 | `rol_cajero` | `SELECT` sobre `producto`, `categoria` y `medio_de_pago`. Registra ventas solo con `EXECUTE` sobre `sp_RegistrarVentaTransaccional` y el tipo `DetalleVentaTransaccional`. | RN.03, RN.05 |
-| `rol_inventario` | `SELECT`, `INSERT` y `UPDATE` sobre `producto` y `categoria`. Sin `DELETE`. | RN.06 |
-| `rol_administracion` | `SELECT`, `INSERT` y `UPDATE` sobre `usuario` y `persona`. `DENY SELECT` sobre `usuario.password`. | RN.01, RN.02, RN.06 |
+| `rol_inventario` | `SELECT`, `INSERT` y `UPDATE` sobre `producto` y `categoria`, y `SELECT` sobre `unidad_medida`. Sin `DELETE`. | RN.06 |
+| `rol_administracion` | `SELECT`, `INSERT` y `UPDATE` sobre `usuario` y `persona`, y `SELECT` sobre `rol`. `DENY SELECT` sobre `usuario.password`. | RN.01, RN.02, RN.06 |
 | `rol_supervisor` | `SELECT` sobre `venta`, `detalle_venta` y `producto`. | RN.08 |
 
 Ningún rol tiene `DELETE` porque las bajas son lógicas (`UPDATE` de `eliminado_en`).
@@ -33,7 +33,7 @@ El caso más interesante es el del cajero. No puede modificar `producto` ni inse
 
 ## Script y pruebas
 
-El script está en [sql/tecnico/seguridad/seguridad_permisos_roles.sql](../../sql/tecnico/seguridad/seguridad_permisos_roles.sql). Se corre después de `transacciones.sql`, y `seguridad_limpieza.sql` borra todo lo que crea para poder repetirlo.
+El script está en [sql/tecnico/seguridad/seguridad_permisos_roles.sql](../../sql/tecnico/seguridad/seguridad_permisos_roles.sql). Crea los roles, los permisos y un usuario de ejemplo por rol (`cajero1`, `inventario1`, `admin1` y `supervisor1`), y a continuación las pruebas. Se corre después de `transacciones.sql`, porque otorga permisos sobre el procedimiento y el tipo que se crean ahí. Al final tiene una sección de limpieza que borra los usuarios, roles y logins de ejemplo (al borrar los roles también se van sus permisos), así el script se puede volver a correr desde cero.
 
 Cada prueba se hace como el usuario correspondiente con `EXECUTE AS USER` y se vuelve con `REVERT`. Las que deben fallar usan `precio = precio` o `WHERE 1 = 0`, para no cambiar datos reales si el permiso existiera por error.
 
@@ -49,7 +49,7 @@ REVERT;
 | --- | --- | --- | --- |
 | `cajero1` | `UPDATE` directo sobre `producto` | Denegado | Denegado (error 229) |
 | `cajero1` | `INSERT` directo sobre `venta` | Denegado | Denegado (error 229) |
-| `cajero1` | `EXEC sp_RegistrarVentaTransaccional` | Venta registrada | Correcto. Stock de leche: Correcto. Stock de leche: 110 -> 109 |
+| `cajero1` | `EXEC sp_RegistrarVentaTransaccional` | Venta registrada | Correcto. Stock de leche: 110 -> 109 |
 | `inventario1` | `UPDATE` sobre `producto` | Correcto | Correcto |
 | `inventario1` | `DELETE` sobre `producto` | Denegado | Denegado (error 229) |
 | `admin1` | `SELECT` de `password` | Denegado | Denegado (error 230) |
@@ -66,5 +66,7 @@ Los resultados son los esperados. El `SELECT` de `password` da error 230 y no 22
 ## A tener en cuenta
 
 - Las contraseñas del script son solo de demostración.
-- Si una prueba falla y no llega al `REVERT`, la sesión de SSMS queda ejecutando como ese usuario. Nos pasó con el cajero, por eso el bloque del procedimiento usa `TRY/CATCH` con `REVERT`.
+- La prueba del cajero registra una venta real de 1 leche cada vez que se corre.
+- Como la limpieza está al final, cuando termina de correr el script los roles y usuarios ya no existen. Si se quieren dejar creados para probar a mano, hay que correr solo hasta antes de la sección de limpieza. Y si el script se corta a la mitad y quedan objetos creados, hay que correr la sección de limpieza antes de volver a empezar.
+- Si una prueba falla y no llega al `REVERT`, la sesión de SSMS queda ejecutando como ese usuario y lo que se corra después falla por falta de permisos. Nos pasó con el cajero. Se arregla ejecutando `REVERT;`.
 - La regla RN.08 no se puede resolver con un `GRANT` sobre `detalle_venta`, porque un permiso de tabla no distingue el estado de la venta. Haría falta un procedimiento. Por ahora el supervisor solo consulta.
