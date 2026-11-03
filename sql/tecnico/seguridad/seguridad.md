@@ -33,7 +33,7 @@ El caso más interesante es el del cajero. No puede modificar `producto` ni inse
 
 ## Script y pruebas
 
-El script está en [sql/tecnico/seguridad/seguridad_permisos_roles.sql](../../sql/tecnico/seguridad/seguridad_permisos_roles.sql). Crea los roles, los permisos y un usuario de ejemplo por rol (`cajero1`, `inventario1`, `admin1` y `supervisor1`), y a continuación las pruebas. Se corre después de `transacciones.sql`, porque otorga permisos sobre el procedimiento y el tipo que se crean ahí. Al final tiene una sección de limpieza que borra los usuarios, roles y logins de ejemplo (al borrar los roles también se van sus permisos), así el script se puede volver a correr desde cero.
+El script está en [sql/tecnico/seguridad/seguridad_permisos_roles.sql](seguridad_permisos_roles.sql)(../../sql/tecnico/seguridad/seguridad_permisos_roles.sql). Crea los roles, los permisos y un usuario de ejemplo por rol (`cajero1`, `inventario1`, `admin1` y `supervisor1`), y a continuación las pruebas. Se corre después de `transacciones.sql`, porque otorga permisos sobre el procedimiento y el tipo que se crean ahí. Al final tiene una sección de limpieza que borra los usuarios, roles y logins de ejemplo (al borrar los roles también se van sus permisos), así el script se puede volver a correr desde cero.
 
 Cada prueba se hace como el usuario correspondiente con `EXECUTE AS USER` y se vuelve con `REVERT`. Las que deben fallar usan `precio = precio` o `WHERE 1 = 0`, para no cambiar datos reales si el permiso existiera por error.
 
