@@ -72,3 +72,51 @@ BEGIN
     FROM deleted AS d;
 END;
 GO
+
+
+-- Ejemplo para probar el trigger de actualizacion de venta
+
+-- 1. Consultar la venta original
+SELECT *
+FROM dbo.venta
+WHERE id_venta = 1;
+
+-- 2. Actualizar la venta
+UPDATE dbo.venta
+SET estado = 'Completada',
+    monto_total = monto_total + 1000
+WHERE id_venta = 1;
+
+-- 3. Consultar la venta modificada
+SELECT *
+FROM dbo.venta
+WHERE id_venta = 1;
+
+-- 4. Consultar la auditoría
+SELECT *
+FROM dbo.auditoria_venta
+WHERE id_venta = 1
+ORDER BY fecha_auditoria DESC;
+
+
+-- Ejemplo para probar trigger del delete de producto
+
+-- 1. Consultar el producto original
+SELECT *
+FROM dbo.producto
+WHERE id_producto = 6;
+
+-- 2. Eliminar el producto
+DELETE FROM dbo.producto
+WHERE id_producto = 6;
+
+-- 3. Comprobar que ya no existe
+SELECT *
+FROM dbo.producto
+WHERE id_producto = 6;
+
+-- 4. Consultar la auditoría
+SELECT *
+FROM dbo.auditoria_producto
+WHERE id_producto = 6
+ORDER BY fecha_auditoria DESC;
