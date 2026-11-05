@@ -81,7 +81,7 @@ CREATE TABLE producto (
     stock INT NOT NULL,
     peso DECIMAL(10,2) NULL,
     codigo_barra VARCHAR(50) NOT NULL UNIQUE,
-    descripcion TEXT NOT NULL,
+    descripcion VARCHAR(200) NOT NULL,
     creado_en DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     actualizado_en DATETIME NULL,
     eliminado_en DATETIME NULL,
