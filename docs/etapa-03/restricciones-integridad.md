@@ -5,8 +5,9 @@
 * **Por qué:** Garantiza la integridad referencial, evitando que se inserten registros huérfanos (por ejemplo, una venta asociada a un cliente o medio de pago que no existe).
 
 ## 2. Restricciones de Unicidad (`UNIQUE`)
-* **Qué hace:** Asegura que campos como `numero_tarjeta` en la tabla `tarjeta` no se repitan.
-* **Por qué:** Evita duplicidad de datos sensibles y asegura que cada elemento único se identifique de forma unívoca.
+* **Qué hace:** Asegura que campos que identifican a una entidad no se repitan: `rol.nombre`, `persona.email`, `categoria.nombre`, `unidad_medida.abreviatura`, `banco.nombre`, `usuario.nombre_usuario` y `producto.codigo_barra`.
+* **Por qué:** Evita duplicados en datos que deben identificar de forma unívoca a un registro (por ejemplo, dos productos con el mismo código de barras o dos cuentas con el mismo nombre de usuario).
+* **Caso de `tarjeta.numero_tarjeta`:** no es `UNIQUE` a propósito. Cada pago con tarjeta genera su propio registro en `medio_de_pago` y `tarjeta`, por lo que el mismo número puede aparecer en más de un registro cuando un cliente paga varias veces con la misma tarjeta.
 
 ## 3. Restricciones de Validación (`CHECK`)
 * **Fechas (`eliminado_en >= creado_en`):**
